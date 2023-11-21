@@ -1,46 +1,58 @@
 #include "mbed.h"
 
-enum estados {apagado, encendido} estado;
+enum estados {esperandoPulsar, pulsado, esperandoSoltar} estado;
  
 Timer temporizador;
  
+DigitalIn boton(ARDUINO_UNO_D2);
+DigitalOut led(ARDUINO_UNO_D3);
  
-DigitalOut led(LED1);
- 
-void estadoApagado()
+void EsperandoPulsar()
 {
-    if(temporizador.read()>1.0f) {
+    if(boton == 1) {
         temporizador.reset();
         led=1;
-        estado=encendido;
+        estado=pulsado;
     }
 }
  
-void estadoEncendido()
+void Pulsado()
 {
-    if(temporizador.read()>0.5f) {
+    if(temporizador.read()>2.0f && boton == 0) {
         temporizador.reset();
         led=0;
-        estado=apagado;
- 
+        estado=esperandoPulsar;
+     }
+     else if(temporizador.read()>2.0f && boton == 1) {
+        led=0;
+        estado=esperandoSoltar;
+     }
+}
+
+void EsperandoSoltar()
+{
+    if (boton == 0){
+        estado = esperandoPulsar;
     }
 }
  
 int main()
 {
     led=0;
-    estado=apagado;
+    estado=esperandoPulsar;
     temporizador.reset();
     temporizador.start();
     while(1) {
         switch(estado) {
-            case apagado:
-                estadoApagado();
+            case esperandoPulsar:
+                EsperandoPulsar();
                 break;
-            case encendido:
-                estadoEncendido();
+            case pulsado:
+                Pulsado();
+                break;
+            case esperandoSoltar:
+                EsperandoSoltar();
                 break;
         }
- 
-    }
+     }
 }
