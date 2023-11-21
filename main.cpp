@@ -28,7 +28,7 @@ void Pulsado()
         estado=esperandoSoltar;
      }
 }
-
+//lhjkdfrgkhd
 void EsperandoSoltar()
 {
     if (boton == 0){
